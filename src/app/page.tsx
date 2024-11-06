@@ -1,20 +1,20 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { Advocates } from "./types/advocates";
+import useSWR from "swr";
 
 export default function Home() {
-  const [advocates, setAdvocates] = useState([]);
-  const [filteredAdvocates, setFilteredAdvocates] = useState([]);
-
-  useEffect(() => {
-    console.log("fetching advocates...");
-    fetch("/api/advocates").then((response) => {
+  const [advocates, setAdvocates] = useState<Advocates[]>([]);
+  const [filteredAdvocates, setFilteredAdvocates] = useState<Advocates[]>([]);
+  const fetcher = (url: string) =>
+    fetch(url).then((response) => {
       response.json().then((jsonResponse) => {
         setAdvocates(jsonResponse.data);
         setFilteredAdvocates(jsonResponse.data);
       });
     });
-  }, []);
+  const { data, error, isLoading } = useSWR("/api/advocates", fetcher);
 
   const onChange = (e) => {
     const searchTerm = e.target.value;
@@ -28,8 +28,7 @@ export default function Home() {
         advocate.lastName.includes(searchTerm) ||
         advocate.city.includes(searchTerm) ||
         advocate.degree.includes(searchTerm) ||
-        advocate.specialties.includes(searchTerm) ||
-        advocate.yearsOfExperience.includes(searchTerm)
+        advocate.specialties.includes(searchTerm)
       );
     });
 
