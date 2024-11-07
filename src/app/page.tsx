@@ -1,9 +1,19 @@
 "use client";
 
 import { ChangeEvent, useEffect, useState } from "react";
-import { Advocates } from "./types/advocates";
+import { Advocates, Fields } from "./types/advocates";
 import useSWR from "swr";
 import useDebounce from "./hooks/useDebounce";
+
+const fields = [
+  "First Name",
+  "Last Name",
+  "City",
+  "Degree",
+  "Specialties",
+  "Years of Experience",
+  "Phone Number",
+];
 
 export default function Home() {
   const [advocates, setAdvocates] = useState<Advocates[]>([]);
@@ -17,25 +27,28 @@ export default function Home() {
     });
   const { data, error, isLoading } = useSWR("/api/advocates", fetcher);
   const [searchTerm, setSearchTerm] = useState<string>("");
+  const [searchField, setSearchField] =
+    useState<keyof typeof Fields>("Specialties");
   const debouncedSearchTerm = useDebounce(searchTerm);
 
   useEffect(() => {
     const term = debouncedSearchTerm.toLowerCase();
     const filteredAdvocates = advocates.filter((advocate) => {
-      return (
-        advocate.firstName.toLowerCase().includes(term) ||
-        advocate.lastName.toLowerCase().includes(term) ||
-        advocate.city.toLowerCase().includes(term) ||
-        advocate.degree.toLowerCase().includes(term) ||
-        advocate.specialties.filter((specialty) =>
-          specialty.toLowerCase().includes(term)
-        ).length > 0 ||
-        String(advocate.yearsOfExperience).toLowerCase().includes(term)
-      );
+      if (searchField === "Specialties") {
+        return (
+          advocate[Fields[searchField]].filter((specialty) =>
+            specialty.toLowerCase().includes(term)
+          ).length > 0
+        );
+      } else {
+        return advocate[Fields[searchField]]
+          .toString()
+          .toLowerCase()
+          .includes(term);
+      }
     });
-    console.log("filtering advocates...");
     setFilteredAdvocates(filteredAdvocates);
-  }, [debouncedSearchTerm]);
+  }, [debouncedSearchTerm, searchField]);
 
   const onChange = (e: ChangeEvent<HTMLInputElement>) => {
     const searchTerm = e.target.value;
@@ -43,39 +56,63 @@ export default function Home() {
   };
 
   const onClick = () => {
-    console.log(advocates);
+    setSearchField("Specialties");
+    setSearchTerm("");
     setFilteredAdvocates(advocates);
   };
 
+  const changeField = (e: ChangeEvent<HTMLSelectElement>) => {
+    setSearchField(e.target.value as keyof typeof Fields);
+  };
+
   return (
-    <main style={{ margin: "24px" }}>
-      <h1>Solace Advocates</h1>
-      <br />
-      <br />
-      <div>
-        <p>Search</p>
-        <p>
-          Searching for: <span id="search-term"></span>
-        </p>
-        <input
-          style={{ border: "1px solid black" }}
-          onChange={onChange}
-          value={searchTerm}
-        />
-        <button onClick={onClick}>Reset Search</button>
-      </div>
-      <br />
-      <br />
+    <main>
+      <section>
+        <h1
+          className={`
+            bg-[rgb(29,67,57)]
+            py-20
+            text-center
+            align-middle
+            text-white
+            font-bold
+            text-4xl
+          `}
+        >
+          Solace Advocates
+        </h1>
+        <div className="px-6 py-6 bg-[rgb(53,72,85)]">
+          <div className="flex flex-row gap-2">
+            <input
+              placeholder="Searching for:"
+              className="border border-solid border-white px-3 py-1 rounded"
+              onChange={onChange}
+              value={searchTerm}
+            />
+            <select
+              value={searchField}
+              onChange={changeField}
+              className="border border-solid border-white px-3 py-1 rounded"
+            >
+              {fields.map((field) => (
+                <option key={`field-${field}`}>{field}</option>
+              ))}
+            </select>
+            <button
+              onClick={onClick}
+              className="bg-white border border-solid border-white px-3 py-1 rounded"
+            >
+              Reset Search
+            </button>
+          </div>
+        </div>
+      </section>
       <table>
         <thead>
           <tr>
-            <th>First Name</th>
-            <th>Last Name</th>
-            <th>City</th>
-            <th>Degree</th>
-            <th>Specialties</th>
-            <th>Years of Experience</th>
-            <th>Phone Number</th>
+            {fields.map((field) => (
+              <th key={`field-${field}`}>{field}</th>
+            ))}
           </tr>
         </thead>
         <tbody>

@@ -9,3 +9,13 @@ export interface Advocates {
   specialties: string[];
   yearsOfExperience: number;
 }
+
+export enum Fields {
+  "First Name" = "firstName",
+  "Last Name" = "lastName",
+  "City" = "city",
+  "Degree" = "degree",
+  "Specialties" = "specialties",
+  "Years of Experience" = "yearsOfExperience",
+  "Phone Number" = "phoneNumber",
+}

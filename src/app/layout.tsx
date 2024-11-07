@@ -7,6 +7,9 @@ const inter = Inter({ subsets: ["latin"] });
 export const metadata: Metadata = {
   title: "Solace Candidate Assignment",
   description: "Show us what you got",
+  icons: {
+    icon: './favicon.ico'
+  }
 };
 
 export default function RootLayout({
@@ -16,6 +19,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <link rel='icon' href="/favicon.io"/>
       <body className={inter.className}>{children}</body>
     </html>
   );
