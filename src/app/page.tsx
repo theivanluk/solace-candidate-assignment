@@ -4,6 +4,8 @@ import { ChangeEvent, useEffect, useState } from "react";
 import { Advocates, Fields } from "./types/advocates";
 import useSWR from "swr";
 import useDebounce from "./hooks/useDebounce";
+import { TableData } from "./components/tableData";
+import { formatPhoneNumber } from "./utils/stringUtils";
 
 const fields = [
   "First Name",
@@ -66,7 +68,7 @@ export default function Home() {
   };
 
   return (
-    <main>
+    <main className="flex flex-col justify-center">
       <section>
         <h1
           className={`
@@ -81,7 +83,7 @@ export default function Home() {
         >
           Solace Advocates
         </h1>
-        <div className="px-6 py-6 bg-[rgb(53,72,85)]">
+        <div className="sticky top-0 left-0 px-6 py-6 bg-[rgb(53,72,85)] w-full min-h-[50px]">
           <div className="flex flex-row gap-2">
             <input
               placeholder="Searching for:"
@@ -108,10 +110,12 @@ export default function Home() {
         </div>
       </section>
       <table>
-        <thead>
+        <thead className="bg-gray-200">
           <tr>
             {fields.map((field) => (
-              <th key={`field-${field}`}>{field}</th>
+              <th key={`field-${field}`} className="py-2">
+                {field}
+              </th>
             ))}
           </tr>
         </thead>
@@ -119,17 +123,19 @@ export default function Home() {
           {filteredAdvocates.map((advocate) => {
             return (
               <tr key={`advocate-${advocate.id}`}>
-                <td>{advocate.firstName}</td>
-                <td>{advocate.lastName}</td>
-                <td>{advocate.city}</td>
-                <td>{advocate.degree}</td>
-                <td>
+                <TableData>{advocate.firstName}</TableData>
+                <TableData>{advocate.lastName}</TableData>
+                <TableData>{advocate.city}</TableData>
+                <TableData>{advocate.degree}</TableData>
+                <TableData>
                   {advocate.specialties.map((s) => (
                     <div key={`${advocate.id}-${s}`}>{s}</div>
                   ))}
-                </td>
-                <td>{advocate.yearsOfExperience}</td>
-                <td>{advocate.phoneNumber}</td>
+                </TableData>
+                <TableData>{advocate.yearsOfExperience}</TableData>
+                <TableData>
+                  {formatPhoneNumber(String(advocate.phoneNumber))}
+                </TableData>
               </tr>
             );
           })}
