@@ -83,7 +83,7 @@ export default function Home() {
         >
           Solace Advocates
         </h1>
-        <div className="sticky top-0 left-0 px-6 py-6 bg-[rgb(53,72,85)] w-full min-h-[50px]">
+        <div className="px-6 py-6 bg-[rgb(53,72,85)] w-full min-h-[50px]">
           <div className="flex flex-row gap-2">
             <input
               placeholder="Searching for:"
@@ -110,7 +110,7 @@ export default function Home() {
         </div>
       </section>
       <table>
-        <thead className="bg-gray-200">
+        <thead className="bg-gray-200 sticky top-0">
           <tr>
             {fields.map((field) => (
               <th key={`field-${field}`} className="py-2">
